@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tobify - Iniciar Sesión</title>
+    <style>
+        /* Estilos con la paleta Tobify: Azul Celeste y Púrpura */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Degradado de Púrpura a Azul Celeste */
+            background: linear-gradient(135deg, #6f42c1 0%, #00d2ff 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .contenedor-login {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 35px 25px;
+            border-radius: 16px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 340px;
+            width: 100%;
+        }
+        .logo-tobify {
+            font-size: 42px;
+            font-weight: bold;
+            /* Texto degradado para el nombre */
+            background: linear-gradient(45deg, #6f42c1, #00b4d8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 10px 0;
+            letter-spacing: -1px;
+        }
+        p {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+        .grupo-input {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            font-size: 12px;
+            color: #6f42c1;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            margin-left: 5px;
+        }
+        input {
+            width: 90%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+        /* Al dar clic en el input se pone azul celeste */
+        input:focus {
+            border-color: #00d2ff;
+            box-shadow: 0 0 8px rgba(0, 210, 255, 0.3);
+        }
+        button {
+            width: 98%;
+            padding: 12px;
+            /* Botón Púrpura principal */
+            background-color: #6f42c1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(111, 66, 193, 0.2);
+        }
+        /* Al pasar el mouse se vuelve un tono más encendido */
+        button:hover {
+            background-color: #5a32a3;
+            box-shadow: 0 6px 12px rgba(111, 66, 193, 0.3);
+        }
+        .btn-verificar {
+            /* Botón Azul Celeste para el segundo paso */
+            background-color: #00b4d8 !important;
+            box-shadow: 0 4px 6px rgba(0, 180, 216, 0.2) !important;
+        }
+        .btn-verificar:hover {
+            background-color: #0093b2 !important;
+        }
+        #seccion-codigo {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-login">
+        <h1 class="logo-tobify">Tobify</h1>
+        <p>Subí tus fotos y textos al suave. Ingresá tu número nicaragüense para recibir un SMS.</p>
+        
+        <div class="grupo-input">
+            <label>NÚMERO DE TELÉFONO</label>
+            <!-- Dejamos el +505 fijo para Nicaragua -->
+            <input type="tel" id="telefono" placeholder="+505 8888-8888" value="+505">
+        </div>
+        
+        <button onclick="enviarCodigo()">Enviar Código</button>
+
+        <!-- Sección oculta que aparece al mandar el SMS -->
+        <div id="seccion-codigo" style="display:none;">
+            <div class="grupo-input">
+                <label>CÓDIGO DE VERIFICACIÓN</label>
+                <input type="number" id="codigo-verificacion" placeholder="Ej: 123456">
+            </div>
+            <button class="btn-verificar" onclick="verificarCodigo()">Verificar e Entrar</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulación del flujo (Luego metemos Firebase aquí)
+        function enviarCodigo() {
+            let numero = document.getElementById('telefono').value;
+            if(numero.length < 12) {
+                alert("Ponele mente, te falta el número completo con el +505");
+            } else {
+                alert("Simulando SMS enviado al " + numero);
+                document.getElementById('seccion-codigo').style.display = 'block';
+            }
+        }
+
+        function verificarCodigo() {
+            let codigo = document.getElementById('codigo-verificacion').value;
+            if(codigo === "123456") {
+                alert("¡Todo de viaje! Entrando a Tobify...");
+                window.location.href = "principal.html";
+            } else {
+                alert("Clavo con el código. Poné '123456' para la prueba.");
+            }
+        }
+    </script>
+
+</body>
+</html>

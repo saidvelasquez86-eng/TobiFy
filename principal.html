@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tobify - Inicio</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding-bottom: 40px;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #6f42c1 0%, #00b4d8 100%);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: -1px;
+            cursor: pointer;
+        }
+        .btn-salir {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            display: inline-block;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .btn-salir:hover {
+            background: white;
+            color: #6f42c1;
+        }
+        .contenedor {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        
+        /* NUEVO: Estilos para la Barra de Búsqueda */
+        .caja-busqueda {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .input-busqueda {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .input-busqueda:focus {
+            border-color: #6f42c1;
+            background-color: #fbf9ff;
+        }
+
+        .caja-publicar {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 96%;
+            height: 60px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 15px;
+            resize: none;
+            outline: none;
+        }
+        textarea:focus {
+            border-color: #00b4d8;
+        }
+        .acciones-publicar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .btn-foto {
+            background-color: #f0f4f8;
+            color: #6f42c1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .btn-subir {
+            background-color: #6f42c1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-subir:hover {
+            background-color: #5a32a3;
+        }
+        .publicacion {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+        .pub-usuario {
+            padding: 12px;
+            font-weight: bold;
+            color: #6f42c1;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f4f8;
+            cursor: pointer;
+        }
+        .pub-texto {
+            padding: 15px;
+            font-size: 15px;
+            color: #333;
+            margin: 0;
+        }
+        .pub-foto {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de arriba -->
+    <div class="navbar">
+        <h1 onclick="location.reload()">Tobify</h1>
+        <div style="display: flex; gap: 8px;">
+            <a href="chats.html" class="btn-salir" style="text-decoration: none; background-color: rgba(255,255,255,0.3);">💬 Chats</a>
+            <a href="perfil.html" class="btn-salir" style="text-decoration: none;">👤 Mi Perfil</a>
+            <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
+        </div>
+    </div>
+
+    <div class="contenedor">
+        
+        <!-- NUEVO: Barra de Búsqueda Inteligente -->
+        <div class="caja-busqueda">
+            <input type="text" id="buscador" class="input-busqueda" placeholder="🔍 Buscar usuarios o publicaciones..." oninput="filtrarMuro()">
+        </div>
+        
+        <!-- Caja para crear nuevas publicaciones -->
+        <div class="caja-publicar">
+            <textarea id="texto-nuevo" placeholder="¿Qué onda? ¿Qué estás pensando?"></textarea>
+            <div class="acciones-publicar">
+                <label for="input-foto" class="btn-foto">📸 Agregar Foto</label>
+                <input type="file" id="input-foto" accept="image/*" style="display: none;">
+                <button class="btn-subir" onclick="publicarAlgo()">Publicar</button>
+            </div>
+        </div>
+
+        <!-- Muro con identificadores para el buscador -->
+        <div id="muro">
+            <div class="publicacion">
+                <div class="pub-usuario" onclick="window.location.href='perfil.html?ver=otro'">📱 +505 7777-7777 (Juancho Rivas)</div>
+                <p class="pub-texto">Disfrutando de un buen fresco de cacao bien helado.</p>
+                <img class="pub-foto" src="https://picsum.photos/500/350" alt="Foto">
+            </div>
+
+            <div class="publicacion">
+                <div class="pub-usuario">📱 +505 8888-8888 (Tú)</div>
+                <p class="pub-texto">Ideay salvajes, estrenando Tobify. ¡Esta plataforma va a quedar criminal! 🇳🇮</p>
+            </div>
+            
+            <div class="publicacion">
+                <div class="pub-usuario" onclick="alert('Simulación de perfil')">📱 +505 5555-5555 (María López)</div>
+                <p class="pub-texto">Al suave cocinando un buen vigorón en Granada.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // NUEVA FUNCIÓN: Filtra las publicaciones del muro en tiempo real
+        function filtrarMuro() {
+            let textoBusqueda = document.getElementById('buscador').value.toLowerCase();
+            let publicaciones = document.getElementsByClassName('publicacion');
+
+            for (let i = 0; i < publicaciones.length; i++) {
+                // Agarramos el texto del usuario y el contenido del post
+                let contenidoPost = publicaciones[i].innerText.toLowerCase();
+                
+                // Si lo que escribió el usuario está dentro del post, se queda; si no, se oculta
+                if (contenidoPost.includes(textoBusqueda)) {
+                    publicaciones[i].style.display = "block";
+                } else {
+                    publicaciones[i].style.display = "none";
+                }
+            }
+        }
+
+        function publicarAlgo() {
+            let texto = document.getElementById('texto-nuevo').value;
+            if(texto.trim() === "") {
+                alert("Escribí algo primero, no lo dejés en blanco, hombe.");
+                return;
+            }
+            alert("Simulando envío a Firebase: " + texto);
+            document.getElementById('texto-nuevo').value = "";
+        }
+
+        function cerrarSesion() {
+            alert("Saliendo de Tobify...");
+            window.location.href = "login.html";
+        }
+    </script>
+
+</body>
+</html>

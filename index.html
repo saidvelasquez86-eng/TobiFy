@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tobify - Compartí al suave</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6f42c1 0%, #00d2ff 100%);
+            color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .contenedor-bienvenida {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); /* Efecto de vidrio esmerilado */
+            padding: 40px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        h1 {
+            font-size: 56px;
+            margin: 0 0 10px 0;
+            letter-spacing: -2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        p {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            color: #f0f4f8;
+        }
+        .btn-comenzar {
+            display: inline-block;
+            background-color: white;
+            color: #6f42c1;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none; /* Quita la raya de enlace */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+        .btn-comenzar:hover {
+            transform: scale(1.05); /* Se agranda un poquito al pasar el mouse */
+            background-color: #f0f4f8;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .footer-nica {
+            margin-top: 25px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-bienvenida">
+        <h1>Tobify</h1>
+        <p>La nueva plataforma nica para compartir tus fotos y textos con la comunidad, sin rodeos y al suave.</p>
+        
+        <!-- Aquí está el salto HTTP directo a la pantalla de Login -->
+        <a href="login.html" class="btn-comenzar">¡Comenzar ya!</a>
+        
+        <div class="footer-nica">🇳🇮 Hecho en Nicaragua 🇳🇮</div>
+    </div>
+
+</body>
+</html>

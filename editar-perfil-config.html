@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tobify - Editar Perfil</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6f42c1 0%, #00d2ff 100%);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .contenedor-editar {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+            max-width: 360px;
+            width: 100%;
+        }
+        h2 {
+            color: #6f42c1;
+            margin-top: 0;
+            text-align: center;
+            font-size: 24px;
+        }
+        .grupo-input {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .grupo-input-texto {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            font-size: 12px;
+            color: #6f42c1;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .vista-previa {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #6f42c1;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        .btn-buscar-foto {
+            background-color: #f0f4f8;
+            color: #6f42c1;
+            padding: 8px 14px;
+            border-radius: 6px;
+            display: inline-block;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-buscar-foto:hover {
+            background-color: #e2e8f0;
+        }
+        input[type="text"], textarea {
+            width: 93%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+        input[type="text"]:focus, textarea:focus {
+            border-color: #00b4d8;
+        }
+        textarea {
+            resize: none;
+            height: 60px;
+        }
+        .botones {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-guardar {
+            background-color: #6f42c1;
+            color: white;
+            box-shadow: 0 4px 6px rgba(111, 66, 193, 0.2);
+        }
+        .btn-guardar:hover {
+            background-color: #5a32a3;
+        }
+        .btn-cancelar {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        .btn-cancelar:hover {
+            background-color: #d2d2d2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-editar">
+        <h2>Editar Perfil</h2>
+        
+        <!-- Zona de Foto de Perfil -->
+        <div class="grupo-input">
+            <label>FOTO DE PERFIL</label>
+            <img id="vista-previa" class="vista-previa" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Vista previa">
+            <br>
+            <label for="input-avatar" class="btn-buscar-foto">📸 Cambiar Foto</label>
+            <input type="file" id="input-avatar" accept="image/*" style="display: none;" onchange="cargarVistaPrevia(event)">
+        </div>
+        
+        <!-- Campos de Texto -->
+        <div class="grupo-input-texto">
+            <label>TU NOMBRE O ALIAS</label>
+            <input type="text" id="nuevo-nombre" value="El Chele Nica" placeholder="Ej: El Chele Nica">
+        </div>
+
+        <div class="grupo-input-texto">
+            <label>BIOGRAFÍA / ESTADO</label>
+            <textarea id="nueva-bio" placeholder="¿Qué onda de tu vida?">Viviendo al suave en Nicaragua. Pasión por el vigorón.</textarea>
+        </div>
+
+        <div class="botones">
+            <button class="btn-cancelar" onclick="cancelar()">Cancelar</button>
+            <button class="btn-guardar" onclick="guardarPerfil()">Guardar</button>
+        </div>
+    </div>
+
+    <script>
+        // Muestra la foto de inmediato cuando la elegís en el cel o la compu
+        function cargarVistaPrevia(event) {
+            let vistaPrevia = document.getElementById('vista-previa');
+            if(event.target.files[0]) {
+                vistaPrevia.src = URL.createObjectURL(event.target.files[0]);
+            }
+        }
+
+        function guardarPerfil() {
+            let nombre = document.getElementById('nuevo-nombre').value;
+            if(nombre.trim() === "") {
+                alert("Ponele un nombre al menos, hombe.");
+                return;
+            }
+            alert("¡Cambios guardados localmente! Regresando a tu perfil...");
+            window.location.href = "perfil.html";
+        }
+
+        function cancelar() {
+            window.location.href = "perfil.html";
+        }
+    </script>
+
+</body>
+</html>

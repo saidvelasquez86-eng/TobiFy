@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tobify - Mensajes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #6f42c1 0%, #00b4d8 100%);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 { margin: 0; font-size: 26px; letter-spacing: -1px; cursor: pointer; }
+        .btn-volver {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .btn-volver:hover { background: white; color: #6f42c1; }
+
+        /* Contenedor del Chat partido en dos */
+        .cuerpo-chat {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+        }
+
+        /* Barra lateral izquierda (Lista de personas) */
+        .lista-contactos {
+            width: 35%;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+            background-color: #fafbfc;
+        }
+        .contacto {
+            display: flex;
+            align-items: center;
+            padding: 15px 10px;
+            border-bottom: 1px solid #f0f4f8;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .contacto:hover { background-color: #f0f4f8; }
+        .contacto.activo { background-color: #e8eaf6; border-left: 4px solid #6f42c1; }
+        .contacto img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
+        .contacto-info h4 { margin: 0; color: #333; font-size: 14px; }
+        .contacto-info p { margin: 2px 0 0 0; color: #777; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Ventana derecha (Conversación activa) */
+        .ventana-conversacion {
+            width: 65%;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9f9f9;
+        }
+        .chat-header {
+            padding: 14px;
+            background: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: bold;
+            color: #6f42c1;
+        }
+        .zona-mensajes {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Burbujas de chat */
+        .burbuja {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .burbuja.mio {
+            background-color: #6f42c1;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .burbuja.otro {
+            background-color: #00b4d8;
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        /* Barra de entrada de texto inferior */
+        .barra-enviar {
+            padding: 12px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+        .barra-enviar input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+        .barra-enviar input:focus { border-color: #00b4d8; }
+        .barra-enviar button {
+            background-color: #6f42c1;
+            color: white;
+            border: none;
+            padding: 0 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .barra-enviar button:hover { background-color: #5a32a3; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1 onclick="window.location.href='principal.html'">Tobify</h1>
+        <a href="principal.html" class="btn-volver">← Volver al Muro</a>
+    </div>
+
+    <div class="cuerpo-chat">
+        
+        <div class="lista-contactos">
+            <div class="contacto activo">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" alt="Juancho">
+                <div class="contacto-info">
+                    <h4>Juancho Rivas</h4>
+                    <p id="ultimo-msg-juancho">Ideay salvaje, ¿vamos al puerto?</p>
+                </div>
+            </div>
+            <div class="contacto" onclick="alert('Simulación: Este usuario no tiene mensajes activos ahorita.')">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="Maria">
+                <div class="contacto-info">
+                    <h4>María López</h4>
+                    <p>jajaja qué de viaje...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="ventana-conversacion">
+            <div class="chat-header" id="chat-con-quien">
+                Chat con Juancho Rivas
+            </div>
+            
+            <div class="zona-mensajes" id="caja-burbujas">
+                <div class="burbuja otro">¿Qué onda chele? ¿Qué tal Tobify?</div>
+                <div class="burbuja mio">¡Todo nítido hermano! Aquí probando el sistema de chat.</div>
+                <div class="burbuja otro">Ideay salvaje, ¿vamos al puerto?</div>
+            </div>
+
+            <div class="barra-enviar">
+                <input type="text" id="input-mensaje" placeholder="Escribí un mensaje al suave..." onkeypress="revisarEnter(event)">
+                <button onclick="enviarMensajePrivado()">Enviar</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Función para agregar el texto a la pantalla en vivo
+        function enviarMensajePrivado() {
+            let input = document.getElementById('input-mensaje');
+            let texto = input.value;
+
+            if(texto.trim() === "") return; // No mandar vacíos
+
+            let zona = document.getElementById('caja-burbujas');
+
+            // Creamos la burbuja morada (Mía)
+            let nuevaBurbuja = document.createElement('div');
+            nuevaBurbuja.className = "burbuja mio";
+            nuevaBurbuja.innerText = texto;
+
+            // La metemos al chat
+            zona.appendChild(nuevaBurbuja);
+
+            // Actualizamos el último mensaje de la barra izquierda
+            document.getElementById('ultimo-msg-juancho').innerText = texto;
+
+            // Limpiamos el input y bajamos el scroll de la pantalla
+            input.value = "";
+            zona.scrollTop = zona.scrollHeight;
+        }
+
+        // Permite enviar dándole a la tecla Enter del teclado
+        function revisarEnter(event) {
+            if (event.key === "Enter") {
+                enviarMensajePrivado();
+            }
+        }
+    </script>
+</body>
+</html>
