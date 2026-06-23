@@ -3,150 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tobify - Iniciar Sesión</title>
+    <title>Tobify - Acceso</title>
     <style>
-        /* Estilos con la paleta Tobify: Azul Celeste y Púrpura */
-        body {
+        * {
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Degradado de Púrpura a Azul Celeste */
-            background: linear-gradient(135deg, #6f42c1 0%, #00d2ff 100%);
+        }
+        body {
+            background: linear-gradient(135deg, #6f42c1 0%, #00b4d8 100%);
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
+            padding: 20px;
         }
-        .contenedor-login {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 35px 25px;
+        .tarjeta-login {
+            background: white;
+            padding: 30px;
             border-radius: 16px;
-            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            max-width: 340px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            max-width: 400px;
             width: 100%;
+            text-align: center;
+            transition: all 0.3s ease;
         }
-        .logo-tobify {
-            font-size: 42px;
-            font-weight: bold;
-            /* Texto degradado para el nombre */
-            background: linear-gradient(45deg, #6f42c1, #00b4d8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0 0 10px 0;
-            letter-spacing: -1px;
+        h2 { color: #6f42c1; margin-top: 0; margin-bottom: 5px; }
+        p { color: #666; font-size: 14px; margin-bottom: 25px; }
+        .grupo-input { margin-bottom: 15px; text-align: left; }
+        label { font-size: 11px; color: #6f42c1; font-weight: bold; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            outline: none; 
+            background: #fafafa;
+            color: #333333;
         }
-        p {
-            color: #555;
-            font-size: 14px;
-            margin-bottom: 25px;
-            line-height: 1.4;
+        input:focus, select:focus { border-color: #00b4d8; background: white; }
+
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background-color: #6f42c1; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 15px; 
+            transition: 0.2s;
         }
-        .grupo-input {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        label {
-            font-size: 12px;
-            color: #6f42c1;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-            margin-left: 5px;
-        }
-        input {
-            width: 90%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            transition: 0.3s;
-        }
-        /* Al dar clic en el input se pone azul celeste */
-        input:focus {
-            border-color: #00d2ff;
-            box-shadow: 0 0 8px rgba(0, 210, 255, 0.3);
-        }
-        button {
-            width: 98%;
-            padding: 12px;
-            /* Botón Púrpura principal */
-            background-color: #6f42c1;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 6px rgba(111, 66, 193, 0.2);
-        }
-        /* Al pasar el mouse se vuelve un tono más encendido */
-        button:hover {
-            background-color: #5a32a3;
-            box-shadow: 0 6px 12px rgba(111, 66, 193, 0.3);
-        }
-        .btn-verificar {
-            /* Botón Azul Celeste para el segundo paso */
-            background-color: #00b4d8 !important;
-            box-shadow: 0 4px 6px rgba(0, 180, 216, 0.2) !important;
-        }
-        .btn-verificar:hover {
-            background-color: #0093b2 !important;
-        }
-        #seccion-codigo {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px dashed #e0e0e0;
+        button:hover { background-color: #5a32a3; transform: scale(1.01); }
+        .enlace-cambio { 
+            margin-top: 20px; 
+            font-size: 13px; 
+            color: #00b4d8; 
+            cursor: pointer; 
+            display: inline-block; 
+            text-decoration: underline; 
         }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-    <div class="contenedor-login">
-        <h1 class="logo-tobify">Tobify</h1>
-        <p>Subí tus fotos y textos al suave. Ingresá tu número nicaragüense para recibir un SMS.</p>
+    <div class="tarjeta-login">
+        <h2 id="titulo-pantalla">Iniciar Sesión</h2>
+        <p id="descripcion-pantalla">Ponele tus datos para entrar a Tobify.</p>
         
-        <div class="grupo-input">
-            <label>NÚMERO DE TELÉFONO</label>
-            <!-- Dejamos el +505 fijo para Nicaragua -->
-            <input type="tel" id="telefono" placeholder="+505 8888-8888" value="+505">
-        </div>
-        
-        <button onclick="enviarCodigo()">Enviar Código</button>
-
-        <!-- Sección oculta que aparece al mandar el SMS -->
-        <div id="seccion-codigo" style="display:none;">
+        <div id="form-login">
             <div class="grupo-input">
-                <label>CÓDIGO DE VERIFICACIÓN</label>
-                <input type="number" id="codigo-verificacion" placeholder="Ej: 123456">
+                <label>Nombre de Usuario / Alias</label>
+                <input type="text" id="login-usuario" placeholder="Ej: ElCheleNica">
             </div>
-            <button class="btn-verificar" onclick="verificarCodigo()">Verificar e Entrar</button>
+            <div class="grupo-input">
+                <label>Contraseña</label>
+                <input type="password" id="login-pass" placeholder="******">
+            </div>
         </div>
+
+        <div id="form-registro" style="display: none;">
+            <div class="grupo-input">
+                <label>Nombre de Usuario Único</label>
+                <input type="text" id="reg-usuario" placeholder="Ej: Juancho99">
+            </div>
+            <div class="grupo-input">
+                <label>Nombre Completo</label>
+                <input type="text" id="reg-nombre" placeholder="Ej: Juan José Rivas">
+            </div>
+            <div class="grupo-input">
+                <label>Fecha de Nacimiento</label>
+                <input type="text" id="reg-nacimiento" placeholder="Ej: 24/08/2002">
+            </div>
+            <div class="grupo-input">
+                <label>Sexo / Género</label>
+                <select id="reg-sexo">
+                    <option value="" disabled selected>Seleccioná tu sexo</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                </select>
+            </div>
+            <div class="grupo-input">
+                <label>Contraseña Nueva</label>
+                <input type="password" id="reg-pass" placeholder="******">
+            </div>
+            <div class="grupo-input">
+                <label>Repetir Contraseña</label>
+                <input type="password" id="reg-pass-confirm" placeholder="******">
+            </div>
+        </div>
+
+        <button id="btn-principal" onclick="procesarFormulario()">Entrar a Tobify</button>
+
+        <span class="enlace-cambio" id="btn-cambiar" onclick="intercambiarModo()">¿No tenés cuenta? Registrate aquí</span>
     </div>
 
     <script>
-        // Simulación del flujo (Luego metemos Firebase aquí)
-        function enviarCodigo() {
-            let numero = document.getElementById('telefono').value;
-            if(numero.length < 12) {
-                alert("Ponele mente, te falta el número completo con el +505");
+        // 🔥 ¡CONECTADO AL CIEN CON TUS CODES REALES!
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5t3sMtfl1ngjG93Gjd7t-Bnncv1NDJ0g",
+            authDomain: "tobify-26b47.firebaseapp.com",
+            projectId: "tobify-26b47",
+            storageBucket: "tobify-26b47.firebasestorage.app",
+            messagingSenderId: "880734962681",
+            appId: "1:880734962681:web:103cf6d5c3afbeea5e3328",
+            measurementId: "G-HGLLXFR9CF"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let modoRegistro = false;
+
+        function intercambiarModo() {
+            modoRegistro = !modoRegistro;
+            let titulo = document.getElementById('titulo-pantalla');
+            let desc = document.getElementById('descripcion-pantalla');
+            let btn = document.getElementById('btn-principal');
+            let link = document.getElementById('btn-cambiar');
+            let divLogin = document.getElementById('form-login');
+            let divRegistro = document.getElementById('form-registro');
+
+            if(modoRegistro) {
+                titulo.innerText = "Crear Cuenta";
+                desc.innerText = "Formá parte de la red social más pinolera.";
+                btn.innerText = "Registrarme y Crear Cuenta";
+                link.innerText = "¿Ya tenés cuenta? Inicia sesión";
+                divLogin.style.display = 'none';
+                divRegistro.style.display = 'block';
             } else {
-                alert("Simulando SMS enviado al " + numero);
-                document.getElementById('seccion-codigo').style.display = 'block';
+                titulo.innerText = "Iniciar Sesión";
+                desc.innerText = "Ponele tus datos para entrar a Tobify.";
+                btn.innerText = "Entrar a Tobify";
+                link.innerText = "¿No tenés cuenta? Registrate aquí";
+                divLogin.style.display = 'block';
+                divRegistro.style.display = 'none';
             }
         }
 
-        function verificarCodigo() {
-            let codigo = document.getElementById('codigo-verificacion').value;
-            if(codigo === "123456") {
-                alert("¡Todo de viaje! Entrando a Tobify...");
-                window.location.href = "principal.html";
+        function procesarFormulario() {
+            if (modoRegistro) {
+                let usuario = document.getElementById('reg-usuario').value.trim().toLowerCase();
+                let nombreCompleto = document.getElementById('reg-nombre').value.trim();
+                let nacimiento = document.getElementById('reg-nacimiento').value.trim();
+                let sexo = document.getElementById('reg-sexo').value;
+                let pass = document.getElementById('reg-pass').value;
+                let passConfirm = document.getElementById('reg-pass-confirm').value;
+
+                if(!usuario || !nombreCompleto || !nacimiento || !sexo || !pass || !passConfirm) {
+                    alert("No dejes ningún campo vacío para registrarte, hombe.");
+                    return;
+                }
+
+                if(pass !== passConfirm) {
+                    alert("❌ Las contraseñas no coinciden. Verificalas bien.");
+                    return;
+                }
+
+                // Guardar usuario en tu Firestore real
+                db.collection("usuarios").doc(usuario).get().then((doc) => {
+                    if (doc.exists) {
+                        alert("❌ Ese nombre de usuario ya está ocupado. Buscate otro.");
+                    } else {
+                        db.collection("usuarios").doc(usuario).set({
+                            usuario: usuario,
+                            nombreCompleto: nombreCompleto,
+                            fechaNacimiento: nacimiento,
+                            sexo: sexo,
+                            password: pass,
+                            fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+                        })
+                        .then(() => {
+                            localStorage.setItem('sesion_activa', 'true');
+                            localStorage.setItem('usuario_nombre', nombreCompleto);
+                            localStorage.setItem('usuario_alias', "@" + usuario);
+                            alert("¡Bárbaro! Registrado al cien en la nube.");
+                            window.location.href = "principal.html";
+                        })
+                        .catch((error) => {
+                            alert("Error al guardar en Firebase: " + error.message);
+                        });
+                    }
+                }).catch((error) => {
+                    alert("Error en base de datos: " + error.message);
+                });
+
             } else {
-                alert("Clavo con el código. Poné '123456' para la prueba.");
+                let usuarioLogin = document.getElementById('login-usuario').value.trim().toLowerCase();
+                let passLogin = document.getElementById('login-pass').value;
+
+                if(!usuarioLogin || !passLogin) {
+                    alert("Meté tu usuario y contraseña para ingresar.");
+                    return;
+                }
+
+                // Iniciar sesión buscando en tu Firestore real
+                db.collection("usuarios").doc(usuarioLogin).get().then((doc) => {
+                    if (doc.exists) {
+                        let datos = doc.data();
+                        if(passLogin === datos.password) {
+                            localStorage.setItem('sesion_activa', 'true');
+                            localStorage.setItem('usuario_nombre', datos.nombreCompleto);
+                            localStorage.setItem('usuario_alias', "@" + datos.usuario);
+                            window.location.href = "principal.html";
+                        } else {
+                            alert("❌ Contraseña incorrecta.");
+                        }
+                    } else {
+                        alert("❌ Este usuario no existe. Registrate abajo.");
+                    }
+                }).catch((error) => {
+                    alert("Error de conexión: " + error.message);
+                });
             }
         }
     </script>
-
 </body>
 </html>
