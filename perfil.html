@@ -1,282 +1,266 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tobify - Perfil</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            margin: 0;
-            padding-bottom: 40px;
-        }
-        .navbar {
-            background: linear-gradient(135deg, #6f42c1 0%, #00b4d8 100%);
-            color: white;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .navbar h1 { 
-            margin: 0; 
-            font-size: 26px; 
-            letter-spacing: -1px; 
-            cursor: pointer;
-        }
-        .btn-volver {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-        .btn-volver:hover {
-            background: white;
-            color: #6f42c1;
-        }
-        .contenedor { 
-            max-width: 500px; 
-            margin: 20px auto; 
-            padding: 0 15px; 
-        }
-        
-        /* Tarjeta del Perfil de Usuario */
-        .tarjeta-perfil {
-            background: white;
-            border-radius: 16px;
-            padding: 25px 20px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-        }
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 15px auto;
-            display: block;
-            border: 3px solid #6f42c1;
-            box-shadow: 0 4px 10px rgba(111, 66, 193, 0.2);
-        }
-        .nombre-usuario { 
-            font-size: 22px; 
-            font-weight: bold; 
-            color: #333; 
-            margin: 0; 
-        }
-        .telefono-usuario { 
-            font-size: 14px; 
-            color: #777; 
-            margin: 2px 0 10px 0; 
-        }
-        .bio-usuario { 
-            font-size: 14px; 
-            color: #555; 
-            margin: 0 0 15px 0; 
-            font-style: italic; 
-            line-height: 1.4;
-        }
-        
-        /* Botones de Acción Estilizados */
-        .btn-accion {
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 14px;
-            border: none;
-            margin-bottom: 20px;
-            display: inline-block;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-        .btn-editar { 
-            background-color: #f0f4f8; 
-            color: #6f42c1; 
-        }
-        .btn-editar:hover {
-            background-color: #e2e8f0;
-        }
-        .btn-seguir { 
-            background-color: #6f42c1; 
-            color: white; 
-            box-shadow: 0 4px 6px rgba(111, 66, 193, 0.15);
-        }
-        .btn-seguir:hover {
-            background-color: #5a32a3;
-        }
-        .btn-siguiendo { 
-            background-color: #00b4d8; 
-            color: white; 
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tobify - Mi Perfil</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
 
-        /* Contadores de Seguidores y Siguiendo */
-        .estadisticas {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            border-top: 1px solid #f0f4f8;
-            padding-top: 15px;
-        }
-        .stat-item { 
-            font-size: 13px; 
-            color: #666; 
-        }
-        .stat-numero { 
-            display: block; 
-            font-size: 18px; 
-            font-weight: bold; 
-            color: #333; 
-        }
+    body {
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
+      min-height: 100vh;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        /* Muro del usuario */
-        .titulo-seccion { 
-            font-size: 16px; 
-            color: #6f42c1; 
-            font-weight: bold; 
-            margin-bottom: 15px; 
-        }
-        .publicacion { 
-            background: white; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-            margin-bottom: 20px; 
-            overflow: hidden; 
-        }
-        .pub-header { 
-            padding: 12px; 
-            font-size: 12px; 
-            color: #999; 
-            background-color: #fafbfc;
-            border-bottom: 1px solid #f0f4f8;
-        }
-        .pub-texto { 
-            padding: 15px; 
-            font-size: 15px; 
-            color: #333; 
-            margin: 0; 
-        }
-        .pub-foto {
-            width: 100%;
-            max-height: 350px;
-            object-fit: cover;
-            display: block;
-        }
-    </style>
+    /* Barra de Navegación */
+    .navbar {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo-tobify {
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 0 10px #00f2fe;
+      text-decoration: none;
+    }
+
+    .btn-nav {
+      background: #00f2fe;
+      color: #333;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .btn-nav:hover {
+      background: #fff;
+      box-shadow: 0 0 15px #00f2fe;
+    }
+
+    /* Contenedor del Perfil */
+    .perfil-container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      width: 90%;
+      max-width: 500px;
+      margin: 30px 0;
+      padding: 30px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Foto de Perfil */
+    .avatar-wrapper {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 20px;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #00f2fe;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .username-title {
+      font-size: 26px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #fff;
+    }
+
+    .user-status {
+      font-size: 14px;
+      color: #dfdfdf;
+      font-style: italic;
+      margin-bottom: 25px;
+    }
+
+    /* Info del perfil */
+    .info-box {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      text-align: left;
+    }
+
+    .info-item {
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    .info-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-label {
+      color: #00f2fe;
+      font-weight: bold;
+    }
+
+    /* Botón Configuración */
+    .btn-edit {
+      background: linear-gradient(90deg, #b04efd, #4e54c8);
+      color: white;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      display: inline-block;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(176, 78, 253, 0.4);
+    }
+
+    .btn-edit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(176, 78, 253, 0.6);
+    }
+
+    /* Cargando */
+    .loading-text {
+      font-size: 18px;
+      color: #00f2fe;
+      font-weight: bold;
+    }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-    <!-- Barra Superior -->
-    <div class="navbar">
-        <h1 onclick="window.location.href='principal.html'">Tobify</h1>
-        <a href="principal.html" class="btn-volver">← Volver al Muro</a>
+  <nav class="navbar">
+    <a href="principal.html" class="logo-tobify">Tobify</a>
+    <a href="principal.html" class="btn-nav">Volver al Muro</a>
+  </nav>
+
+  <main class="perfil-container" id="profile-card">
+    <div id="loading-state">
+      <p class="loading-text">Cargando datos de Tobify...</p>
     </div>
 
-    <div class="contenedor">
-        
-        <!-- Tarjeta de Información Principal -->
-        <div class="tarjeta-perfil">
-            <!-- Foto de Perfil Redonda -->
-            <img class="avatar" id="img-perfil" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Foto de perfil">
-            
-            <h2 class="nombre-usuario" id="txt-nombre">El Chele Nica</h2>
-            <div class="telefono-usuario" id="txt-telefono">+505 8888-8888</div>
-            <p class="bio-usuario" id="txt-bio">"Viviendo al suave en Nicaragua. Pasión por el vigorón."</p>
-            
-            <!-- Bloque de botones inteligentes -->
-            <div id="bloque-botones">
-                <!-- Botón para MI perfil -->
-                <a href="editar-perfil-config.html" id="btn-editar-link" class="btn-accion btn-editar">⚙️ Configurar Perfil</a>
-                <!-- Botón para el perfil de OTROS (oculto por defecto) -->
-                <button class="btn-accion btn-seguir" id="btn-seguir-click" style="display:none;" onclick="intercambiarSeguir()">➕ Seguir</button>
-            </div>
-            
-            <!-- Bloque de contadores solicitado -->
-            <div class="estadisticas">
-                <div class="stat-item">
-                    <span class="stat-numero" id="num-publicaciones">2</span>
-                    Publicaciones
-                </div>
-                <div class="stat-item">
-                    <span class="stat-numero" id="num-seguidores">150</span>
-                    Seguidores
-                </div>
-                <div class="stat-item">
-                    <span class="stat-numero" id="num-siguiendo">85</span>
-                    Siguiendo
-                </div>
-            </div>
+    <div id="profile-content" style="display: none;">
+      <div class="avatar-wrapper">
+        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Foto de Perfil" class="avatar-img" id="user-avatar">
+      </div>
+
+      <h2 class="username-title" id="user-name">Nombre de Usuario</h2>
+      <p class="user-status" id="user-bio">"¡Disfrutando de Tobify al suave!"</p>
+
+      <div class="info-box">
+        <div class="info-item">
+          <span class="info-label">ID de Cuenta:</span> <span id="info-id">---</span>
         </div>
-
-        <!-- Sección de contenido -->
-        <div class="titulo-seccion" id="titulo-muro">Mis publicaciones</div>
-
-        <div id="mis-publicaciones">
-            <div class="publicacion">
-                <div class="pub-header">Hace 10 min</div>
-                <p class="pub-texto">Ideay salvajes, estrenando Tobify. ¡Esta plataforma va a quedar criminal! 🇳🇮</p>
-            </div>
-            <div class="publicacion">
-                <div class="pub-header">Ayer</div>
-                <p class="pub-texto">Un fresco de cacao para la calor.</p>
-                <img class="pub-foto" src="https://picsum.photos/500/350?random=2" alt="Foto de prueba">
-            </div>
+        <div class="info-item">
+          <span class="info-label">Estado de conexión:</span> <span style="color: #4efd54;">● Activo en la nube</span>
         </div>
+      </div>
 
+      <a href="editar-perfil-config.html" class="btn-edit">Editar Perfil e Imagen</a>
     </div>
+  </main>
 
-    <script>
-        // Detecta automáticamente si queremos ver el perfil de OTRA persona
-        const urlParams = new URLSearchParams(window.location.search);
-        const verOtro = urlParams.get('ver');
+  <script>
+    // ⚠️ REEMPLAZÁ ESTE BLOQUE EXACTO CON LAS CREDENCIALES REALES DE TU PROYECTO
+    // (Las mismas que copiaste en tu archivo login.html)
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY_AQUÍ",
+      authDomain: "TU_PROYECTO.firebaseapp.com",
+      projectId: "TU_PROYECTO_ID",
+      storageBucket: "TU_PROYECTO.appspot.com",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
 
-        if(verOtro === 'otro') {
-            // Cambiamos todos los datos al perfil falso de Juancho Rivas
-            document.getElementById('img-perfil').src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150";
-            document.getElementById('txt-nombre').innerText = "Juancho Rivas";
-            document.getElementById('txt-telefono').innerText = "+505 7777-7777";
-            document.getElementById('txt-bio').innerText = "Subiendo fotos desde San Juan del Sur 🏄‍♂️";
-            document.getElementById('num-publicaciones').innerText = "14";
-            document.getElementById('num-seguidores').innerText = "420";
-            document.getElementById('num-siguiendo').innerText = "200";
-            document.getElementById('titulo-muro').innerText = "Publicaciones de Juancho";
-            
-            // Escondemos tu engranaje de configuración y activamos el botón de Seguir
-            document.getElementById('btn-editar-link').style.display = 'none';
-            document.getElementById('btn-seguir-click').style.display = 'inline-block';
-        }
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-        // Lógica del botón Seguir / Dejar de seguir
-        let siguiendo = false;
-        function intercambiarSeguir() {
-            let btn = document.getElementById('btn-seguir-click');
-            let txtSeguidores = document.getElementById('num-seguidores');
-            let numeroActual = parseInt(txtSeguidores.innerText);
+    // 1. Verificar quién inició sesión usando la memoria local segura
+    // Cuando el usuario ingresa en login.html, guardamos su identificador de cuenta
+    const usuarioLogueadoId = localStorage.getItem("usuarioLogueado");
 
-            if(!siguiendo) {
-                btn.innerText = "✓ Siguiendo";
-                btn.className = "btn-accion btn-siguiendo";
-                txtSeguidores.innerText = numeroActual + 1;
-                siguiendo = true;
-            } else {
-                btn.innerText = "➕ Seguir";
-                btn.className = "btn-accion btn-seguir";
-                txtSeguidores.innerText = numeroActual - 1;
-                siguiendo = false;
+    // Seguridad: Si algún vivo intenta entrar escribiendo perfil.html en la barra sin loguearse,
+    // lo mandamos de regreso al login.html inmediatamente.
+    if (!usuarioLogueadoId) {
+      window.location.href = "login.html";
+    } else {
+      // Ejecutar la lectura en la base de datos de Google Cloud Firestore
+      obtenerDatosUsuario();
+    }
+
+    function obtenerDatosUsuario() {
+      // Buscamos en la colección "usuarios" el documento que corresponde a este ID
+      db.collection("usuarios").doc(usuarioLogueadoId).get()
+        .then((doc) => {
+          if (doc.exists) {
+            const datos = doc.data();
+
+            // Insertar de manera dinámica el nombre real del usuario en el HTML
+            document.getElementById("user-name").innerText = datos.nombre || usuarioLogueadoId;
+            document.getElementById("info-id").innerText = "@" + usuarioLogueadoId;
+
+            // Si el usuario ya guardó una biografía o estado en su perfil
+            if (datos.biografia) {
+              document.getElementById("user-bio").innerText = `"${datos.biografia}"`;
             }
-        }
-    </script>
+
+            // Si el usuario ya tiene guardado un enlace de foto de perfil real
+            if (datos.fotoPerfilURL) {
+              document.getElementById("user-avatar").src = datos.fotoPerfilURL;
+            }
+
+            // Ocultar el aviso de cargando y mostrar la tarjeta con los datos al cien
+            document.getElementById("loading-state").style.display = "none";
+            document.getElementById("profile-content").style.display = "block";
+
+          } else {
+            // Si el documento no existe en Firestore pero está logueado localmente
+            console.log("No se encontraron detalles del perfil en la base de datos.");
+            document.getElementById("user-name").innerText = usuarioLogueadoId;
+            document.getElementById("info-id").innerText = "@" + usuarioLogueadoId;
+            document.getElementById("loading-state").style.display = "none";
+            document.getElementById("profile-content").style.display = "block";
+          }
+        })
+        .catch((error) => {
+          console.error("Error al jalar los datos de Firebase: ", error);
+          alert("Hubo un clavo al conectar con el servidor de Tobify.");
+        });
+    }
+  </script>
 </body>
 </html>
