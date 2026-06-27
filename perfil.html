@@ -193,7 +193,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // Tus credenciales reales de Tobify
+    // Configuración de credenciales de Tobify
     const firebaseConfig = {
       apiKey: "AIzaSyA5t3sMtfl1ngjG93Gjd7t-Bnncv1NDJ0g",
       authDomain: "tobify-26b47.firebaseapp.com",
@@ -204,36 +204,52 @@
       measurementId: "G-HGLLXFR9CF"
     };
 
-    // Inicializar Firebase de forma clásica y segura para la web local
+    // Inicializar Firebase globalmente
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Leer datos de la sesión local
+    // Recuperar datos de sesión local del Login
     const usuarioLogueadoId = localStorage.getItem("usuarioLogueado");
     const nombreLocalBackup = localStorage.getItem("nombreUsuarioLogueado");
 
-    // Seguridad
+    // Seguridad básica
     if (!usuarioLogueadoId) {
       alert("Debés iniciar sesión primero, mi broder.");
       window.location.href = "login.html";
     } else {
+      // Forzar renderizado local inicial rápido por si Firebase se queda colgado
+      mostrarDatosLocales();
       obtenerDatosUsuario();
+    }
+
+    // Carga los datos guardados en el localStorage de inmediato para que la app responda
+    function mostrarDatosLocales() {
+      const nombreTemp = nombreLocalBackup || "Usuario de Tobify";
+      document.getElementById("user-name").innerText = nombreTemp;
+      document.getElementById("info-id").innerText = "@" + nombreTemp.toLowerCase().replace(/\s+/g, '');
+      
+      // Apagar la pantalla de carga e inmediatamente mostrar la estructura
+      document.getElementById("loading-state").style.display = "none";
+      document.getElementById("profile-content").style.display = "block";
     }
 
     async function obtenerDatosUsuario() {
       try {
-        // Consultar el documento en Firestore usando la sintaxis compatible estable
+        console.log("Intentando conectar con Firestore para el usuario: " + usuarioLogueadoId);
+        
+        // Consultar a la colección en la nube
         const docRef = db.collection("usuarios").doc(usuarioLogueadoId);
         const docSnap = await docRef.get();
 
         if (docSnap.exists) {
+          console.log("¡Documento encontrado con éxito en Firestore!");
           const datos = docSnap.data();
           
-          // Renderizar el nombre de Firestore
-          const nombreFinal = datos.nombre || nombreLocalBackup || "Usuario de Tobify";
-          document.getElementById("user-name").innerText = nombreFinal;
-          document.getElementById("info-id").innerText = "@" + nombreFinal.toLowerCase().replace(/\s+/g, '');
-
+          // Reemplazar los datos temporales con los reales de la base de datos
+          if (datos.nombre) {
+            document.getElementById("user-name").innerText = datos.nombre;
+            document.getElementById("info-id").innerText = "@" + datos.nombre.toLowerCase().replace(/\s+/g, '');
+          }
           if (datos.biografia) {
             document.getElementById("user-bio").innerText = `"${datos.biografia}"`;
           }
@@ -241,21 +257,11 @@
             document.getElementById("user-avatar").src = datos.fotoPerfilURL;
           }
         } else {
-          console.log("No hay documento todavía en Firestore, usando respaldo local.");
-          const nombreTemp = nombreLocalBackup || "Usuario Nuevo";
-          document.getElementById("user-name").innerText = nombreTemp;
-          document.getElementById("info-id").innerText = "@" + nombreTemp.toLowerCase().replace(/\s+/g, '');
+          console.warn("No existe un documento para este ID en la colección 'usuarios' de Firestore.");
         }
-
       } catch (error) {
-        console.error("Clavo al conectar con Firestore: ", error);
-        const nombreError = nombreLocalBackup || "Usuario Local";
-        document.getElementById("user-name").innerText = nombreError;
-        document.getElementById("info-id").innerText = "@" + nombreError.toLowerCase().replace(/\s+/g, '');
-      } finally {
-        // Quitar la pantalla de carga de inmediato
-        document.getElementById("loading-state").style.display = "none";
-        document.getElementById("profile-content").style.display = "block";
+        console.error("Clavo real al conectar con Firestore:", error);
+        // Si hay un bloqueo de reglas de Firebase o red, te lo notificará en consola sin trabar la web
       }
     }
   </script>
