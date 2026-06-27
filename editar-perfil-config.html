@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tobify - Editar Perfil</title>
     <style>
+        * {
+            box-sizing: border-box; /* Evita que los inputs y botones se salgan de sus cajas */
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #6f42c1 0%, #00d2ff 100%);
@@ -51,6 +54,7 @@
             border: 3px solid #6f42c1;
             margin-bottom: 10px;
             display: inline-block;
+            background-color: #f0f4f8;
         }
         .btn-buscar-foto {
             background-color: #f0f4f8;
@@ -67,7 +71,7 @@
             background-color: #e2e8f0;
         }
         input[type="text"], textarea {
-            width: 93%;
+            width: 100%; /* Alineación perfecta usando box-sizing global */
             padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
@@ -80,7 +84,7 @@
         }
         textarea {
             resize: none;
-            height: 60px;
+            height: 80px;
         }
         .botones {
             display: flex;
@@ -119,54 +123,147 @@
     <div class="contenedor-editar">
         <h2>Editar Perfil</h2>
         
-        <!-- Zona de Foto de Perfil -->
         <div class="grupo-input">
             <label>FOTO DE PERFIL</label>
-            <img id="vista-previa" class="vista-previa" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Vista previa">
+            <img id="vista-previa" class="vista-previa" src="" alt="Cargando...">
             <br>
             <label for="input-avatar" class="btn-buscar-foto">📸 Cambiar Foto</label>
-            <input type="file" id="input-avatar" accept="image/*" style="display: none;" onchange="cargarVistaPrevia(event)">
+            <input type="file" id="input-avatar" accept="image/*" style="display: none;">
         </div>
         
-        <!-- Campos de Texto -->
         <div class="grupo-input-texto">
-            <label>TU NOMBRE O ALIAS</label>
-            <input type="text" id="nuevo-nombre" value="El Chele Nica" placeholder="Ej: El Chele Nica">
+            <label>TU NOMBRE COMPLETO</label>
+            <input type="text" id="nuevo-nombre" placeholder="Cargando tu nombre...">
         </div>
 
         <div class="grupo-input-texto">
             <label>BIOGRAFÍA / ESTADO</label>
-            <textarea id="nueva-bio" placeholder="¿Qué onda de tu vida?">Viviendo al suave en Nicaragua. Pasión por el vigorón.</textarea>
+            <textarea id="nueva-bio" placeholder="¿Qué onda de tu vida? Cargando..."></textarea>
         </div>
 
         <div class="botones">
-            <button class="btn-cancelar" onclick="cancelar()">Cancelar</button>
-            <button class="btn-guardar" onclick="guardarPerfil()">Guardar</button>
+            <button class="btn-cancelar" id="btn-cancelar">Cancelar</button>
+            <button class="btn-guardar" id="btn-guardar">Guardar</button>
         </div>
     </div>
 
-    <script>
-        // Muestra la foto de inmediato cuando la elegís en el cel o la compu
-        function cargarVistaPrevia(event) {
-            let vistaPrevia = document.getElementById('vista-previa');
-            if(event.target.files[0]) {
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // Credenciales estables del proyecto de Tobify
+        const firebaseConfig = {
+            projectId: "tobify-26b47",
+            authDomain: "tobify-26b47.firebaseapp.com",
+            storageBucket: "tobify-26b47.appspot.com",
+            messagingSenderId: "360098585483",
+            appId: "1:360098585483:web:0d35a399f9fa950663673f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Variables para guardar los elementos del HTML
+        const vistaPrevia = document.getElementById('vista-previa');
+        const inputAvatar = document.getElementById('input-avatar');
+        const nuevoNombreInput = document.getElementById('nuevo-nombre');
+        const nuevaBioInput = document.getElementById('nueva-bio');
+        const btnGuardar = document.getElementById('btn-guardar');
+        const btnCancelar = document.getElementById('btn-cancelar');
+
+        // Seguridad: Sacar el alias del usuario actual del localStorage
+        const usuarioAlias = localStorage.getItem("usuario_alias");
+        let urlFotoActual = ""; // Guardará el enlace de la imagen actual del usuario
+
+        // Redirección forzada si el usuario intenta entrar de vivo sin estar logueado
+        if (!usuarioAlias) {
+            alert("¡Epa! No has iniciado sesión, maje. Volviendo al login.");
+            window.location.href = "login.html";
+        }
+
+        // 1. Cargar los datos actuales de la Base de Datos para ponerlos en los inputs de entrada
+        async function cargarDatosFormulario() {
+            try {
+                const docRef = doc(db, "usuarios", usuarioAlias);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const datos = docSnap.data();
+                    
+                    // Rellenar campos de texto
+                    nuevoNombreInput.value = datos.nombre || "";
+                    nuevaBioInput.value = datos.biografia || "¡Hola! Estoy usando Tobify.";
+                    
+                    // Controlar la foto de perfil: Si no tiene, poner una por defecto
+                    urlFotoActual = datos.fotoPerfil || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150";
+                    vistaPrevia.src = urlFotoActual;
+                } else {
+                    alert("No encontramos tu perfil en la base de datos.");
+                    window.location.href = "perfil.html";
+                }
+            } catch (error) {
+                console.error("Error al jalar datos de Firestore: ", error);
+                alert("Clavo al cargar tu información. Revisá la consola.");
+            }
+        }
+
+        // Ejecutar la carga automática en cuanto abra la pestaña
+        cargarDatosFormulario();
+
+        // 2. Mostrar la foto en pantalla inmediatamente al elegirla desde el cel/compu
+        inputAvatar.addEventListener('change', (event) => {
+            if (event.target.files[0]) {
+                // Genera una ruta temporal local para que el usuario mire el cambio visual de inmediato
                 vistaPrevia.src = URL.createObjectURL(event.target.files[0]);
             }
-        }
+        });
 
-        function guardarPerfil() {
-            let nombre = document.getElementById('nuevo-nombre').value;
-            if(nombre.trim() === "") {
-                alert("Ponele un nombre al menos, hombe.");
+        // 3. Guardar cambios en Cloud Firestore al dar clic en el botón
+        async function guardarPerfil() {
+            const nuevoNombre = nuevoNombreInput.value.trim();
+            const nuevaBio = nuevaBioInput.value.trim();
+
+            if (nuevoNombre === "") {
+                alert("Ponele un nombre al menos, hombe. No lo dejes vacío.");
                 return;
             }
-            alert("¡Cambios guardados localmente! Regresando a tu perfil...");
-            window.location.href = "perfil.html";
+
+            // Deshabilitar botón para evitar que le den 20 clics seguidos mientras guarda
+            btnGuardar.disabled = true;
+            btnGuardar.innerText = "Guardando...";
+
+            try {
+                const docRef = doc(db, "usuarios", usuarioAlias);
+
+                // Objetos a actualizar en Firestore
+                const datosActualizados = {
+                    nombre: nuevoNombre,
+                    biografia: nuevaBio,
+                    fotoPerfil: urlFotoActual // Nota: Aquí guardaremos la URL de ImgBB más adelante
+                };
+
+                // Actualizar documento de Firestore en caliente
+                await updateDoc(docRef, datosActualizados);
+
+                // Actualizar también el localStorage para que el menú o el perfil pinten el nombre nuevo al instante
+                localStorage.setItem("usuario_nombre", nuevoNombre);
+
+                alert("¡Perfil actualizado al cien, maje! Cambios guardados con éxito.");
+                window.location.href = "perfil.html";
+
+            } catch (error) {
+                console.error("Error al actualizar perfil en Firestore: ", error);
+                alert("Ocurrió un clavo al intentar guardar tus datos.");
+                btnGuardar.disabled = false;
+                btnGuardar.innerText = "Guardar";
+            }
         }
 
-        function cancelar() {
+        // Asignar funciones a los eventos de los botones del módulo
+        btnGuardar.addEventListener('click', guardarPerfil);
+        btnCancelar.addEventListener('click', () => {
             window.location.href = "perfil.html";
-        }
+        });
     </script>
 
 </body>
