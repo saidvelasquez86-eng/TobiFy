@@ -1,253 +1,440 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tobify - Mi Perfil</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tobify - Perfil</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding-bottom: 40px;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #6f42c1 0%, #00b4d8 100%);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 { 
+            margin: 0; 
+            font-size: 26px; 
+            letter-spacing: -1px; 
+            cursor: pointer;
+        }
+        .btn-volver {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .btn-volver:hover {
+            background: white;
+            color: #6f42c1;
+        }
+        .contenedor { 
+            max-width: 500px; 
+            margin: 20px auto; 
+            padding: 0 15px; 
+        }
+        
+        /* Tarjeta del Perfil de Usuario */
+        .tarjeta-perfil {
+            background: white;
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px auto;
+            display: block;
+            border: 3px solid #6f42c1;
+            box-shadow: 0 4px 10px rgba(111, 66, 193, 0.2);
+        }
+        .nombre-usuario { 
+            font-size: 22px; 
+            font-weight: bold; 
+            color: #333; 
+            margin: 0; 
+        }
+        .telefono-usuario { 
+            font-size: 14px; 
+            color: #777; 
+            margin: 2px 0 10px 0; 
+        }
+        .bio-usuario { 
+            font-size: 14px; 
+            color: #555; 
+            margin: 0 0 15px 0; 
+            font-style: italic; 
+            line-height: 1.4;
+        }
+        
+        /* Botones de Acción Estilizados */
+        .btn-accion {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+            margin-bottom: 20px;
+            display: inline-block;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .btn-editar { 
+            background-color: #f0f4f8; 
+            color: #6f42c1; 
+        }
+        .btn-editar:hover {
+            background-color: #e2e8f0;
+        }
+        .btn-seguir { 
+            background-color: #6f42c1; 
+            color: white; 
+            box-shadow: 0 4px 6px rgba(111, 66, 193, 0.15);
+        }
+        .btn-seguir:hover {
+            background-color: #5a32a3;
+        }
+        .btn-siguiendo { 
+            background-color: #00b4d8; 
+            color: white; 
+        }
 
-    body {
-      background: linear-gradient(135deg, #4e54c8, #8f94fb);
-      min-height: 100vh;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+        /* Contadores */
+        .estadisticas {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            border-top: 1px solid #f0f4f8;
+            padding-top: 15px;
+        }
+        .stat-item { 
+            font-size: 13px; 
+            color: #666; 
+        }
+        .stat-numero { 
+            display: block; 
+            font-size: 18px; 
+            font-weight: bold; 
+            color: #333; 
+        }
 
-    /* Barra de Navegación */
-    .navbar {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
+        /* Caja de Publicar */
+        .caja-publicar {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        .caja-publicar textarea {
+            width: 100%;
+            height: 70px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            outline: none;
+            resize: none;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        .caja-publicar textarea:focus {
+            border-color: #00b4d8;
+        }
+        .btn-publicar {
+            background-color: #6f42c1;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            margin-top: 8px;
+            transition: 0.2s;
+        }
+        .btn-publicar:hover { background-color: #5a32a3; }
+        .clearfix::after { content: ""; clear: both; display: table; }
 
-    .logo-tobify {
-      font-size: 24px;
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 0 0 10px #00f2fe;
-      text-decoration: none;
-    }
-
-    .btn-nav {
-      background: #00f2fe;
-      color: #333;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .btn-nav:hover {
-      background: #fff;
-      box-shadow: 0 0 15px #00f2fe;
-    }
-
-    /* Contenedor del Perfil */
-    .perfil-container {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(15px);
-      width: 90%;
-      max-width: 500px;
-      margin: 30px 0;
-      padding: 30px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      text-align: center;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Foto de Perfil */
-    .avatar-wrapper {
-      position: relative;
-      width: 130px;
-      height: 130px;
-      margin: 0 auto 20px;
-    }
-
-    .avatar-img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid #00f2fe;
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
-      background-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .username-title {
-      font-size: 26px;
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: #fff;
-    }
-
-    .user-status {
-      font-size: 14px;
-      color: #dfdfdf;
-      font-style: italic;
-      margin-bottom: 25px;
-    }
-
-    /* Info del perfil */
-    .info-box {
-      background: rgba(0, 0, 0, 0.2);
-      padding: 15px;
-      border-radius: 12px;
-      margin-bottom: 25px;
-      text-align: left;
-    }
-
-    .info-item {
-      margin-bottom: 10px;
-      font-size: 15px;
-    }
-
-    .info-item:last-child {
-      margin-bottom: 0;
-    }
-
-    .info-label {
-      color: #00f2fe;
-      font-weight: bold;
-    }
-
-    /* Botón Configuración */
-    .btn-edit {
-      background: linear-gradient(90deg, #b04efd, #4e54c8);
-      color: white;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 25px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-      display: inline-block;
-      text-decoration: none;
-      box-shadow: 0 4px 15px rgba(176, 78, 253, 0.4);
-    }
-
-    .btn-edit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(176, 78, 253, 0.6);
-    }
-  </style>
+        /* Muro del usuario */
+        .titulo-seccion { 
+            font-size: 16px; 
+            color: #6f42c1; 
+            font-weight: bold; 
+            margin-bottom: 15px; 
+        }
+        .publicacion { 
+            background: white; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            margin-bottom: 20px; 
+            overflow: hidden; 
+        }
+        .pub-header { 
+            padding: 12px; 
+            font-size: 12px; 
+            color: #999; 
+            background-color: #fafbfc;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        .pub-texto { 
+            padding: 15px; 
+            font-size: 15px; 
+            color: #333; 
+            margin: 0; 
+        }
+        .pub-foto {
+            width: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            display: block;
+        }
+        .estado-carga {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
 
-  <nav class="navbar">
-    <a href="principal.html" class="logo-tobify">Tobify</a>
-    <a href="principal.html" class="btn-nav">Volver al Muro</a>
-  </nav>
-
-  <main class="perfil-container">
-    <div id="profile-content">
-      <div class="avatar-wrapper">
-        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Foto de Perfil" class="avatar-img" id="user-avatar">
-      </div>
-
-      <h2 class="username-title" id="user-name">Cargando...</h2>
-      <p class="user-status" id="user-bio">"¡Disfrutando de Tobify al suave!"</p>
-
-      <div class="info-box">
-        <div class="info-item">
-          <span class="info-label">Identificador:</span> <span id="info-id">---</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Estado:</span> <span id="db-status" style="color: #00f2fe;">● Cargando Datos Locales...</span>
-        </div>
-      </div>
-
-      <a href="editar-perfil-config.html" class="btn-edit">Editar Perfil e Imagen</a>
+    <div class="navbar">
+        <h1 onclick="window.location.href='principal.html'">Tobify</h1>
+        <a href="principal.html" class="btn-volver">← Volver al Muro</a>
     </div>
-  </main>
 
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <div class="contenedor">
+        
+        <div class="tarjeta-perfil">
+            <img class="avatar" id="img-perfil" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Foto de perfil">
+            
+            <h2 class="nombre-usuario" id="txt-nombre">Cargando...</h2>
+            <div class="telefono-usuario" id="txt-telefono">@usuario</div>
+            <p class="bio-usuario" id="txt-bio">"Cargando biografía pinolera..."</p>
+            
+            <div id="bloque-botones">
+                <a href="editar-perfil-config.html" id="btn-editar-link" class="btn-accion btn-editar">⚙️ Configurar Perfil</a>
+                <button class="btn-accion btn-seguir" id="btn-seguir-click" style="display:none;">➕ Seguir</button>
+            </div>
+            
+            <div class="estadisticas">
+                <div class="stat-item">
+                    <span class="stat-numero" id="num-publicaciones">0</span>
+                    Publicaciones
+                </div>
+                <div class="stat-item">
+                    <span class="stat-numero" id="num-seguidores">150</span>
+                    Seguidores
+                </div>
+                <div class="stat-item">
+                    <span class="stat-numero" id="num-siguiendo">85</span>
+                    Siguiendo
+                </div>
+            </div>
+        </div>
 
-  <script>
-    // Configuración real de tu proyecto Tobify
-    const firebaseConfig = {
-      apiKey: "AIzaSyA5t3sMtfl1ngjG93Gjd7t-Bnncv1NDJ0g",
-      authDomain: "tobify-26b47.firebaseapp.com",
-      projectId: "tobify-26b47",
-      storageBucket: "tobify-26b47.firebasestorage.app",
-      messagingSenderId: "880734962681",
-      appId: "1:880734962681:web:103cf6d5c3afbeea5e3328",
-      measurementId: "G-HGLLXFR9CF"
-    };
+        <div class="caja-publicar clearfix" id="area-publicar">
+            <textarea id="txt-nueva-pub" placeholder="¿Qué hay de nuevo, mi broder? Tirate una publicación o publicidad..."></textarea>
+            <button class="btn-publicar" id="btn-guardar-pub">Publicar</button>
+        </div>
 
-    // 1. EXTRAER INMEDIATAMENTE DATOS DE LOCALSTORAGE (Cero retrasos)
-    const usuarioLogueadoId = localStorage.getItem("usuarioLogueado") || "ID_INVITADO";
-    const nombreLocalBackup = localStorage.getItem("nombreUsuarioLogueado") || "Usuario Tobify";
+        <div class="titulo-seccion" id="titulo-muro">Mis publicaciones</div>
 
-    // Pintar los datos en la pantalla de una vez sin esperar a nadie
-    document.getElementById("user-name").innerText = nombreLocalBackup;
-    document.getElementById("info-id").innerText = "@" + nombreLocalBackup.toLowerCase().replace(/\s+/g, '');
+        <div id="mis-publicaciones">
+            <div class="estado-carga">Buscando publicaciones en la nube...</div>
+        </div>
 
-    // 2. CORREGIR EL ERROR "FIREBASE IS NOT DEFINED" CON UNA VERIFICACIÓN SEGURA
-    // Si las librerías de arriba fallan por red o bloqueo, este 'if' evita que el código muera.
-    if (typeof firebase !== 'undefined') {
-      try {
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    </div>
 
-        // Intentar traer datos frescos de la nube en segundo plano
-        db.collection("usuarios").doc(usuarioLogueadoId).get().then((docSnap) => {
-          if (docSnap.exists) {
-            const datos = docSnap.data();
-            if (datos.nombre) {
-              document.getElementById("user-name").innerText = datos.nombre;
-              document.getElementById("info-id").innerText = "@" + datos.nombre.toLowerCase().replace(/\s+/g, '');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5t3sMtfl1ngjG93Gjd7t-Bnncv1NDJ0g",
+            authDomain: "tobify-26b47.firebaseapp.com",
+            projectId: "tobify-26b47",
+            storageBucket: "tobify-26b47.firebasestorage.app",
+            messagingSenderId: "880734962681",
+            appId: "1:880734962681:web:103cf6d5c3afbeea5e3328",
+            measurementId: "G-HGLLXFR9CF"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 1. CONTROL DE IDENTIDAD (Quién está navegando y qué perfil está viendo)
+        const miAliasLocal = localStorage.getItem("usuario_alias") || "@invitado";
+        const miNombreLocal = localStorage.getItem("usuario_nombre") || "Usuario Tobify";
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const verUsuarioQuery = urlParams.get('ver'); // Captura el alias de la URL (?ver=juancho)
+
+        // Definir de quién es el perfil que vamos a pintar
+        let usuarioObjetivoID = verUsuarioQuery ? verUsuarioQuery.replace("@", "") : miAliasLocal.replace("@", "");
+        let esMiPropioPerfil = (!verUsuarioQuery || "@" + verUsuarioQuery === miAliasLocal);
+
+        // Carga inicial rápida de respaldo si soy yo mismo
+        if (esMiPropioPerfil) {
+            document.getElementById('txt-nombre').innerText = miNombreLocal;
+            document.getElementById('txt-telefono').innerText = miAliasLocal;
+            document.getElementById('area-publicar').style.display = 'block';
+            document.getElementById('btn-editar-link').style.display = 'inline-block';
+            document.getElementById('btn-seguir-click').style.display = 'none';
+            document.getElementById('titulo-muro').innerText = "Mis publicaciones";
+        } else {
+            // Si es perfil ajeno, ocultamos el editor y el cuadro de posteo inmediatamente
+            document.getElementById('area-publicar').style.display = 'none';
+            document.getElementById('btn-editar-link').style.display = 'none';
+            document.getElementById('btn-seguir-click').style.display = 'inline-block';
+            document.getElementById('titulo-muro').innerText = `Publicaciones de @${usuarioObjetivoID}`;
+        }
+
+        // Asignar los eventos de botones de forma modular segura
+        document.getElementById('btn-guardar-pub').addEventListener('click', crearPublicacion);
+        document.getElementById('btn-seguir-click').addEventListener('click', intercambiarSeguir);
+
+        // 2. EXTRAER DATOS FRESCOS DESDE CLOUD FIRESTORE
+        const userDocRef = doc(db, "usuarios", usuarioObjetivoID);
+        getDoc(userDocRef).then((docSnap) => {
+            if (docSnap.exists()) {
+                const datos = docSnap.data();
+                document.getElementById('txt-nombre').innerText = datos.nombre || "Usuario de Tobify";
+                document.getElementById('txt-telefono').innerText = datos.alias || "@" + usuarioObjetivoID;
+                document.getElementById('txt-bio').innerText = datos.biografia ? `"${datos.biografia}"` : "¡Disfrutando de Tobify al suave!";
+                if (datos.fotoPerfilURL) {
+                    document.getElementById('img-perfil').src = datos.fotoPerfilURL;
+                }
+            } else {
+                if(!esMiPropioPerfil) {
+                    document.getElementById('txt-nombre').innerText = "Usuario No Encontrado";
+                    document.getElementById('txt-bio').innerText = "Este perfil no existe en la base de datos.";
+                }
             }
-            if (datos.biografia) {
-              document.getElementById("user-bio").innerText = `"${datos.biografia}"`;
-            }
-            if (datos.fotoPerfilURL) {
-              document.getElementById("user-avatar").src = datos.fotoPerfilURL;
-            }
-            document.getElementById("db-status").innerText = "● Conectado Sincronizado";
-            document.getElementById("db-status").style.color = "#4efd54";
-          } else {
-            document.getElementById("db-status").innerText = "● Modo Local (Sin datos en la nube)";
-            document.getElementById("db-status").style.color = "#ffbd03";
-          }
-        }).catch((error) => {
-          console.log("Error de permisos en Firestore, trabajando local:", error);
-          document.getElementById("db-status").innerText = "● Modo Local Permanente";
-          document.getElementById("db-status").style.color = "#00f2fe";
-        });
-      } catch (e) {
-        console.error("Error inicializando Firestore:", e);
-        EstablecerModoLocalFijo();
-      }
-    } else {
-      // Si Firebase falló rotundamente por red, ejecutamos esto para que la app no colapse
-      console.warn("Firebase no pudo ser cargado desde el CDN. Activando respaldo Local.");
-      EstablecerModoLocalFijo();
-    }
+        }).catch(err => console.error("Error trayendo perfil de la nube: ", err));
 
-    function EstablecerModoLocalFijo() {
-      document.getElementById("db-status").innerText = "● Desconectado (Modo Local Seguro)";
-      document.getElementById("db-status").style.color = "#ff4e4e";
-    }
-  </script>
+        // 3. TRAER LAS PUBLICACIONES REALES DEL USUARIO DESDE LA BASE DE DATOS
+        const tablaPubsRef = collection(db, "usuarios", usuarioObjetivoID, "publicaciones");
+        const consultaOrdenada = query(tablaPubsRef, orderBy("fecha", "desc"));
+
+        function cargarMuroPublicaciones() {
+            getDocs(consultaOrdenada).then((querySnapshot) => {
+                const contenedorMuro = document.getElementById('mis-publicaciones');
+                contenedorMuro.innerHTML = ""; // Limpiar el "cargando..."
+
+                let totalPosts = 0;
+
+                if (querySnapshot.empty) {
+                    contenedorMuro.innerHTML = `<div class="estado-carga">Este usuario no ha tirado ninguna publicación todavía.</div>`;
+                } else {
+                    querySnapshot.forEach((documento) => {
+                        const post = documento.data();
+                        totalPosts++;
+
+                        // Formatear la fecha
+                        let fechaTexto = "Hace poco";
+                        if (post.fecha) {
+                            const date = post.fecha.toDate();
+                            fechaTexto = date.toLocaleDateString() + " a las " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        }
+
+                        // Construir el HTML de la publicación dinámicamente
+                        let plantillaHTML = `
+                            <div class="publicacion">
+                                <div class="pub-header">⏱ ${fechaTexto}</div>
+                                <p class="pub-texto">${post.texto}</p>
+                        `;
+
+                        // Si el post incluye enlace a una foto lo añade, si no, no rompe el bloque
+                        if (post.fotoURL) {
+                            plantillaHTML += `<img class="pub-foto" src="${post.fotoURL}" alt="Foto del post">`;
+                        }
+
+                        plantillaHTML += `</div>`;
+                        contenedorMuro.innerHTML += plantillaHTML;
+                    });
+                }
+                // Actualizar dinámicamente el contador de posts
+                document.getElementById('num-publicaciones').innerText = totalPosts;
+
+            }).catch((error) => {
+                console.error("Error leyendo muro de publicaciones: ", error);
+                document.getElementById('mis-publicaciones').innerHTML = `<div class="estado-carga" style="color: #ff4e4e;">❌ Error al conectar con el muro.</div>`;
+            });
+        }
+
+        // Ejecutar la carga del muro al abrir la página
+        cargarMuroPublicaciones();
+
+        // 4. LÓGICA PARA CREAR NUEVAS PUBLICACIONES (SE GUARDA EN FIRESTORE)
+        function crearPublicacion() {
+            const campoTexto = document.getElementById('txt-nueva-pub');
+            const textoPosteo = campoTexto.value.trim();
+
+            if (!textoPosteo) {
+                alert("Escribí algo primero, no vas a publicar un cuadro en blanco, hombe.");
+                return;
+            }
+
+            // Guardamos el post en la subcolección interna del usuario logueado
+            addDoc(collection(db, "usuarios", usuarioObjetivoID, "publicaciones"), {
+                texto: textoPosteo,
+                fotoURL: "", // Aquí irá el enlace de ImgBB cuando hagamos el módulo de fotos
+                fecha: serverTimestamp()
+            })
+            .then(() => {
+                campoTexto.value = ""; // Limpiar textarea
+                alert("¡Bárbaro! Tu publicación ya está en órbita.");
+                cargarMuroPublicaciones(); // Refrescar muro al instante
+            })
+            .catch((error) => {
+                alert("Clavo al publicar en la base de datos: " + error.message);
+            });
+        }
+
+        // 5. LÓGICA DEL BOTÓN SEGUIR (DURANTE MODO LECTURA)
+        let siguiendo = false;
+        function intercambiarSeguir() {
+            let btn = document.getElementById('btn-seguir-click');
+            let txtSeguidores = document.getElementById('num-seguidores');
+            let numeroActual = parseInt(txtSeguidores.innerText);
+
+            if(!siguiendo) {
+                btn.innerText = "✓ Siguiendo";
+                btn.className = "btn-accion btn-siguiendo";
+                txtSeguidores.innerText = numeroActual + 1;
+                siguiendo = true;
+            } else {
+                btn.innerText = "➕ Seguir";
+                btn.className = "btn-accion btn-seguir";
+                txtSeguidores.innerText = numeroActual - 1;
+                siguiendo = false;
+            }
+        }
+    </script>
 </body>
 </html>
