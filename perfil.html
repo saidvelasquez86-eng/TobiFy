@@ -1,8 +1,198 @@
-<script type="module">
-    // 1. Importación Modular Correcta de Firebase v10
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tobify - Mi Perfil</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
 
+    body {
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
+      min-height: 100vh;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Barra de Navegación */
+    .navbar {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo-tobify {
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 0 10px #00f2fe;
+      text-decoration: none;
+    }
+
+    .btn-nav {
+      background: #00f2fe;
+      color: #333;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .btn-nav:hover {
+      background: #fff;
+      box-shadow: 0 0 15px #00f2fe;
+    }
+
+    /* Contenedor del Perfil */
+    .perfil-container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      width: 90%;
+      max-width: 500px;
+      margin: 30px 0;
+      padding: 30px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Foto de Perfil */
+    .avatar-wrapper {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 20px;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #00f2fe;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .username-title {
+      font-size: 26px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #fff;
+    }
+
+    .user-status {
+      font-size: 14px;
+      color: #dfdfdf;
+      font-style: italic;
+      margin-bottom: 25px;
+    }
+
+    /* Info del perfil */
+    .info-box {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      text-align: left;
+    }
+
+    .info-item {
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    .info-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-label {
+      color: #00f2fe;
+      font-weight: bold;
+    }
+
+    /* Botón Configuración */
+    .btn-edit {
+      background: linear-gradient(90deg, #b04efd, #4e54c8);
+      color: white;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      display: inline-block;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(176, 78, 253, 0.4);
+    }
+
+    .btn-edit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(176, 78, 253, 0.6);
+    }
+
+    .loading-text {
+      font-size: 18px;
+      color: #00f2fe;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="principal.html" class="logo-tobify">Tobify</a>
+    <a href="principal.html" class="btn-nav">Volver al Muro</a>
+  </nav>
+
+  <main class="perfil-container" id="profile-card">
+    <div id="loading-state">
+      <p class="loading-text">Cargando datos de Tobify...</p>
+    </div>
+
+    <div id="profile-content" style="display: none;">
+      <div class="avatar-wrapper">
+        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Foto de Perfil" class="avatar-img" id="user-avatar">
+      </div>
+
+      <h2 class="username-title" id="user-name">Cargando nombre...</h2>
+      <p class="user-status" id="user-bio">"¡Disfrutando de Tobify al suave!"</p>
+
+      <div class="info-box">
+        <div class="info-item">
+          <span class="info-label">Identificador:</span> <span id="info-id">---</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Estado:</span> <span style="color: #4efd54;">● Conectado a Firebase</span>
+        </div>
+      </div>
+
+      <a href="editar-perfil-config.html" class="btn-edit">Editar Perfil e Imagen</a>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <script>
     // Tus credenciales reales de Tobify
     const firebaseConfig = {
       apiKey: "AIzaSyA5t3sMtfl1ngjG93Gjd7t-Bnncv1NDJ0g",
@@ -14,15 +204,15 @@
       measurementId: "G-HGLLXFR9CF"
     };
 
-    // 2. Inicialización corregida (Llamada directa sin el "firebase.")
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    // Inicializar Firebase de forma clásica y segura para la web local
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    // Leer los datos que guardaste localmente al loguearte
+    // Leer datos de la sesión local
     const usuarioLogueadoId = localStorage.getItem("usuarioLogueado");
     const nombreLocalBackup = localStorage.getItem("nombreUsuarioLogueado");
 
-    // Control de seguridad básica
+    // Seguridad
     if (!usuarioLogueadoId) {
       alert("Debés iniciar sesión primero, mi broder.");
       window.location.href = "login.html";
@@ -32,32 +222,26 @@
 
     async function obtenerDatosUsuario() {
       try {
-        // 3. Buscar el documento en la colección "usuarios" usando el ID de la sesión
-        const docRef = doc(db, "usuarios", usuarioLogueadoId);
-        const docSnap = await getDoc(docRef);
+        // Consultar el documento en Firestore usando la sintaxis compatible estable
+        const docRef = db.collection("usuarios").doc(usuarioLogueadoId);
+        const docSnap = await docRef.get();
 
-        if (docSnap.exists()) {
+        if (docSnap.exists) {
           const datos = docSnap.data();
           
-          // Asignar el nombre guardado en Firestore
+          // Renderizar el nombre de Firestore
           const nombreFinal = datos.nombre || nombreLocalBackup || "Usuario de Tobify";
           document.getElementById("user-name").innerText = nombreFinal;
-          
-          // Generar el identificador @usuario estético
           document.getElementById("info-id").innerText = "@" + nombreFinal.toLowerCase().replace(/\s+/g, '');
 
-          // Cargar biografía si existe
           if (datos.biografia) {
             document.getElementById("user-bio").innerText = `"${datos.biografia}"`;
           }
-          
-          // Cargar foto si existe
           if (datos.fotoPerfilURL) {
             document.getElementById("user-avatar").src = datos.fotoPerfilURL;
           }
         } else {
-          // Si el usuario existe pero aún no tiene datos guardados en Firestore
-          console.warn("No se encontró el documento en Firestore. Usando datos locales.");
+          console.log("No hay documento todavía en Firestore, usando respaldo local.");
           const nombreTemp = nombreLocalBackup || "Usuario Nuevo";
           document.getElementById("user-name").innerText = nombreTemp;
           document.getElementById("info-id").innerText = "@" + nombreTemp.toLowerCase().replace(/\s+/g, '');
@@ -65,14 +249,15 @@
 
       } catch (error) {
         console.error("Clavo al conectar con Firestore: ", error);
-        // Respaldo de emergencia en caso de caída de internet o bloqueo
         const nombreError = nombreLocalBackup || "Usuario Local";
         document.getElementById("user-name").innerText = nombreError;
         document.getElementById("info-id").innerText = "@" + nombreError.toLowerCase().replace(/\s+/g, '');
       } finally {
-        // Apagar la pantalla de carga e inmediatamente mostrar la tarjeta del perfil
+        // Quitar la pantalla de carga de inmediato
         document.getElementById("loading-state").style.display = "none";
         document.getElementById("profile-content").style.display = "block";
       }
     }
   </script>
+</body>
+</html>
