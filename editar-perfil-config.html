@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tobify - Editar Perfil</title>
     <style>
-        * {
-            box-sizing: border-box; /* Evita que los inputs y botones se salgan de sus cajas */
-        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #6f42c1 0%, #00d2ff 100%);
@@ -54,7 +51,6 @@
             border: 3px solid #6f42c1;
             margin-bottom: 10px;
             display: inline-block;
-            background-color: #f0f4f8;
         }
         .btn-buscar-foto {
             background-color: #f0f4f8;
@@ -71,12 +67,13 @@
             background-color: #e2e8f0;
         }
         input[type="text"], textarea {
-            width: 100%; /* Alineación perfecta usando box-sizing global */
+            width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 15px;
             outline: none;
+            box-sizing: border-box;
             transition: 0.3s;
         }
         input[type="text"]:focus, textarea:focus {
@@ -84,7 +81,8 @@
         }
         textarea {
             resize: none;
-            height: 80px;
+            height: 70px;
+            font-family: inherit;
         }
         .botones {
             display: flex;
@@ -125,7 +123,7 @@
         
         <div class="grupo-input">
             <label>FOTO DE PERFIL</label>
-            <img id="vista-previa" class="vista-previa" src="" alt="Cargando...">
+            <img id="vista-previa" class="vista-previa" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Vista previa">
             <br>
             <label for="input-avatar" class="btn-buscar-foto">📸 Cambiar Foto</label>
             <input type="file" id="input-avatar" accept="image/*" style="display: none;">
@@ -133,137 +131,113 @@
         
         <div class="grupo-input-texto">
             <label>TU NOMBRE COMPLETO</label>
-            <input type="text" id="nuevo-nombre" placeholder="Cargando tu nombre...">
+            <input type="text" id="nuevo-nombre" placeholder="Cargando nombre...">
         </div>
 
         <div class="grupo-input-texto">
             <label>BIOGRAFÍA / ESTADO</label>
-            <textarea id="nueva-bio" placeholder="¿Qué onda de tu vida? Cargando..."></textarea>
+            <textarea id="nueva-bio" placeholder="¿Qué onda de tu vida, hombe? Cuentate algo..."></textarea>
         </div>
 
         <div class="botones">
-            <button class="btn-cancelar" id="btn-cancelar">Cancelar</button>
-            <button class="btn-guardar" id="btn-guardar">Guardar</button>
+            <button class="btn-cancelar" id="btn-cancelar-click">Cancelar</button>
+            <button class="btn-guardar" id="btn-guardar-click">Guardar</button>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Credenciales estables del proyecto de Tobify
+        // Configuración de tu Firebase Tobify
         const firebaseConfig = {
-            projectId: "tobify-26b47",
+            apiKey: "AIzaSyA5t3sMtfl1ngjG93Gjd7t-Bnncv1NDJ0g",
             authDomain: "tobify-26b47.firebaseapp.com",
-            storageBucket: "tobify-26b47.appspot.com",
-            messagingSenderId: "360098585483",
-            appId: "1:360098585483:web:0d35a399f9fa950663673f"
+            projectId: "tobify-26b47",
+            storageBucket: "tobify-26b47.firebasestorage.app",
+            messagingSenderId: "880734962681",
+            appId: "1:880734962681:web:103cf6d5c3afbeea5e3328",
+            measurementId: "G-HGLLXFR9CF"
         };
 
+        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Variables para guardar los elementos del HTML
-        const vistaPrevia = document.getElementById('vista-previa');
-        const inputAvatar = document.getElementById('input-avatar');
-        const nuevoNombreInput = document.getElementById('nuevo-nombre');
-        const nuevaBioInput = document.getElementById('nueva-bio');
-        const btnGuardar = document.getElementById('btn-guardar');
-        const btnCancelar = document.getElementById('btn-cancelar');
+        // 1. VERIFICACIÓN DE SEGURIDAD (LocalStorage)
+        const miAliasLocal = localStorage.getItem("usuario_alias");
+        const sesionActiva = localStorage.getItem("sesion_activa");
 
-        // Seguridad: Sacar el alias del usuario actual del localStorage
-        const usuarioAlias = localStorage.getItem("usuario_alias");
-        let urlFotoActual = ""; // Guardará el enlace de la imagen actual del usuario
-
-        // Redirección forzada si el usuario intenta entrar de vivo sin estar logueado
-        if (!usuarioAlias) {
-            alert("¡Epa! No has iniciado sesión, maje. Volviendo al login.");
-            window.location.href = "login.html";
+        if (!miAliasLocal || sesionActiva !== "true") {
+            alert("¡Epa, mi broder! No tenés una sesión activa. Iniciá sesión primero.");
+            window.location.href = "index.html"; // O login.html dependiendo de tu archivo principal
         }
 
-        // 1. Cargar los datos actuales de la Base de Datos para ponerlos en los inputs de entrada
-        async function cargarDatosFormulario() {
-            try {
-                const docRef = doc(db, "usuarios", usuarioAlias);
-                const docSnap = await getDoc(docRef);
+        // Limpiamos el alias para usarlo de ID exacto en Firestore (ej: "@juancho" -> "juancho")
+        const miUsuarioID = miAliasLocal.replace("@", "").trim().toLowerCase();
 
-                if (docSnap.exists()) {
-                    const datos = docSnap.data();
-                    
-                    // Rellenar campos de texto
-                    nuevoNombreInput.value = datos.nombre || "";
-                    nuevaBioInput.value = datos.biografia || "¡Hola! Estoy usando Tobify.";
-                    
-                    // Controlar la foto de perfil: Si no tiene, poner una por defecto
-                    urlFotoActual = datos.fotoPerfil || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150";
-                    vistaPrevia.src = urlFotoActual;
-                } else {
-                    alert("No encontramos tu perfil en la base de datos.");
-                    window.location.href = "perfil.html";
+        // 2. CARGAR DATOS ACTUALES DESDE FIRESTORE
+        const userDocRef = doc(db, "usuarios", miUsuarioID);
+        
+        getDoc(userDocRef).then((docSnap) => {
+            if (docSnap.exists()) {
+                const datos = docSnap.data();
+                
+                // Sincronizar inputs con los campos de la base de datos
+                document.getElementById('nuevo-nombre').value = datos.nombreCompleto || "";
+                document.getElementById('nueva-bio').value = datos.biografia || "";
+                
+                if (datos.fotoPerfilURL) {
+                    document.getElementById('vista-previa').src = datos.fotoPerfilURL;
                 }
-            } catch (error) {
-                console.error("Error al jalar datos de Firestore: ", error);
-                alert("Clavo al cargar tu información. Revisá la consola.");
+            } else {
+                console.error("No se encontró el documento de usuario en la base de datos.");
             }
-        }
+        }).catch((error) => {
+            console.error("Clavo al cargar datos de perfil de la nube:", error);
+        });
 
-        // Ejecutar la carga automática en cuanto abra la pestaña
-        cargarDatosFormulario();
-
-        // 2. Mostrar la foto en pantalla inmediatamente al elegirla desde el cel/compu
-        inputAvatar.addEventListener('change', (event) => {
-            if (event.target.files[0]) {
-                // Genera una ruta temporal local para que el usuario mire el cambio visual de inmediato
+        // Evento para activar la vista previa local al elegir una foto
+        document.getElementById('input-avatar').addEventListener('change', (event) => {
+            let vistaPrevia = document.getElementById('vista-previa');
+            if(event.target.files[0]) {
                 vistaPrevia.src = URL.createObjectURL(event.target.files[0]);
             }
         });
 
-        // 3. Guardar cambios en Cloud Firestore al dar clic en el botón
-        async function guardarPerfil() {
-            const nuevoNombre = nuevoNombreInput.value.trim();
-            const nuevaBio = nuevaBioInput.value.trim();
+        // 3. ASIGNAR COMPORTAMIENTOS A LOS BOTONES
+        document.getElementById('btn-guardar-click').addEventListener('click', guardarPerfil);
+        document.getElementById('btn-cancelar-click').addEventListener('click', () => {
+            window.location.href = "perfil.html";
+        });
 
-            if (nuevoNombre === "") {
-                alert("Ponele un nombre al menos, hombe. No lo dejes vacío.");
+        // 4. LÓGICA DE ACTUALIZACIÓN EN FIRESTORE
+        function guardarPerfil() {
+            const nuevoNombre = document.getElementById('nuevo-nombre').value.trim();
+            const nuevaBio = document.getElementById('nueva-bio').value.trim();
+
+            if (!nuevoNombre) {
+                alert("Ponele un nombre al menos, hombe, no vas a quedar anónimo.");
                 return;
             }
 
-            // Deshabilitar botón para evitar que le den 20 clics seguidos mientras guarda
-            btnGuardar.disabled = true;
-            btnGuardar.innerText = "Guardando...";
-
-            try {
-                const docRef = doc(db, "usuarios", usuarioAlias);
-
-                // Objetos a actualizar en Firestore
-                const datosActualizados = {
-                    nombre: nuevoNombre,
-                    biografia: nuevaBio,
-                    fotoPerfil: urlFotoActual // Nota: Aquí guardaremos la URL de ImgBB más adelante
-                };
-
-                // Actualizar documento de Firestore en caliente
-                await updateDoc(docRef, datosActualizados);
-
-                // Actualizar también el localStorage para que el menú o el perfil pinten el nombre nuevo al instante
+            // Actualizamos en la nube de Firebase usando updateDoc
+            updateDoc(userDocRef, {
+                nombreCompleto: nuevoNombre,
+                biografia: nuevaBio
+                // Nota: Aquí se actualizará 'fotoPerfilURL' cuando configuremos ImgBB para subir archivos
+            })
+            .then(() => {
+                // Actualizar también en LocalStorage para que el Muro se actualice rápido sin parpadeos
                 localStorage.setItem("usuario_nombre", nuevoNombre);
-
-                alert("¡Perfil actualizado al cien, maje! Cambios guardados con éxito.");
+                
+                alert("¡Bárbaro! Tu perfil se actualizó en la nube.");
                 window.location.href = "perfil.html";
-
-            } catch (error) {
-                console.error("Error al actualizar perfil en Firestore: ", error);
-                alert("Ocurrió un clavo al intentar guardar tus datos.");
-                btnGuardar.disabled = false;
-                btnGuardar.innerText = "Guardar";
-            }
+            })
+            .catch((error) => {
+                alert("Clavo al guardar cambios en Firestore: " + error.message);
+            });
         }
-
-        // Asignar funciones a los eventos de los botones del módulo
-        btnGuardar.addEventListener('click', guardarPerfil);
-        btnCancelar.addEventListener('click', () => {
-            window.location.href = "perfil.html";
-        });
     </script>
 
 </body>
