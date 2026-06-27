@@ -149,16 +149,12 @@
       box-shadow: 0 6px 20px rgba(176, 78, 253, 0.6);
     }
 
-    /* Cargando */
     .loading-text {
       font-size: 18px;
       color: #00f2fe;
       font-weight: bold;
     }
   </style>
-
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -177,15 +173,15 @@
         <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Foto de Perfil" class="avatar-img" id="user-avatar">
       </div>
 
-      <h2 class="username-title" id="user-name">Nombre de Usuario</h2>
+      <h2 class="username-title" id="user-name">Cargando nombre...</h2>
       <p class="user-status" id="user-bio">"¡Disfrutando de Tobify al suave!"</p>
 
       <div class="info-box">
         <div class="info-item">
-          <span class="info-label">ID de Cuenta:</span> <span id="info-id">---</span>
+          <span class="info-label">Identificador:</span> <span id="info-id">---</span>
         </div>
         <div class="info-item">
-          <span class="info-label">Estado de conexión:</span> <span style="color: #4efd54;">● Activo en la nube</span>
+          <span class="info-label">Estado:</span> <span style="color: #4efd54;">● Conectado a Firebase</span>
         </div>
       </div>
 
@@ -193,73 +189,74 @@
     </div>
   </main>
 
-  <script>
-    // ⚠️ REEMPLAZÁ ESTE BLOQUE EXACTO CON LAS CREDENCIALES REALES DE TU PROYECTO
-    // (Las mismas que copiaste en tu archivo login.html)
+  <script type="module">
+    // Importar librerías de la versión moderna compatibles con la web
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-lite.js";
+
+    // Tus credenciales reales que me pasaste
     const firebaseConfig = {
-      apiKey: "TU_API_KEY_AQUÍ",
-      authDomain: "TU_PROYECTO.firebaseapp.com",
-      projectId: "TU_PROYECTO_ID",
-      storageBucket: "TU_PROYECTO.appspot.com",
-      messagingSenderId: "TU_SENDER_ID",
-      appId: "TU_APP_ID"
+      apiKey: "AIzaSyA5t3sMtfl1ngjG93Gjd7t-Bnncv1NDJ0g",
+      authDomain: "tobify-26b47.firebaseapp.com",
+      projectId: "tobify-26b47",
+      storageBucket: "tobify-26b47.firebasestorage.app",
+      messagingSenderId: "880734962681",
+      appId: "1:880734962681:web:103cf6d5c3afbeea5e3328",
+      measurementId: "G-HGLLXFR9CF"
     };
 
-    // Inicializar Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    // Inicializar Firebase moderno
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    // 1. Verificar quién inició sesión usando la memoria local segura
-    // Cuando el usuario ingresa en login.html, guardamos su identificador de cuenta
+    // Leer quién está logueado en la sesión local
     const usuarioLogueadoId = localStorage.getItem("usuarioLogueado");
+    const nombreLocalBackup = localStorage.getItem("nombreUsuarioLogueado");
 
-    // Seguridad: Si algún vivo intenta entrar escribiendo perfil.html en la barra sin loguearse,
-    // lo mandamos de regreso al login.html inmediatamente.
+    // Seguridad: Si intentan entrar a la fuerza sin loguearse
     if (!usuarioLogueadoId) {
+      alert("Debés iniciar sesión primero, mi broder.");
       window.location.href = "login.html";
     } else {
-      // Ejecutar la lectura en la base de datos de Google Cloud Firestore
       obtenerDatosUsuario();
     }
 
-    function obtenerDatosUsuario() {
-      // Buscamos en la colección "usuarios" el documento que corresponde a este ID
-      db.collection("usuarios").doc(usuarioLogueadoId).get()
-        .then((doc) => {
-          if (doc.exists) {
-            const datos = doc.data();
+    async function obtenerDatosUsuario() {
+      try {
+        // Apuntar al documento exacto en la colección "usuarios" en Firestore v9+
+        const docRef = doc(db, "usuarios", usuarioLogueadoId);
+        const docSnap = await getDoc(docRef);
 
-            // Insertar de manera dinámica el nombre real del usuario en el HTML
-            document.getElementById("user-name").innerText = datos.nombre || usuarioLogueadoId;
-            document.getElementById("info-id").innerText = "@" + usuarioLogueadoId;
+        if (docSnap.exists()) {
+          const datos = docSnap.data();
+          
+          // 1. Mostrar nombre de la base de datos, si no existe usa el del registro local, si no el ID
+          document.getElementById("user-name").innerText = datos.nombre || nombreLocalBackup || "Usuario de Tobify";
+          document.getElementById("info-id").innerText = "@" + (datos.nombre || usuarioLogueadoId).toLowerCase().replace(/\s+/g, '');
 
-            // Si el usuario ya guardó una biografía o estado en su perfil
-            if (datos.biografia) {
-              document.getElementById("user-bio").innerText = `"${datos.biografia}"`;
-            }
-
-            // Si el usuario ya tiene guardado un enlace de foto de perfil real
-            if (datos.fotoPerfilURL) {
-              document.getElementById("user-avatar").src = datos.fotoPerfilURL;
-            }
-
-            // Ocultar el aviso de cargando y mostrar la tarjeta con los datos al cien
-            document.getElementById("loading-state").style.display = "none";
-            document.getElementById("profile-content").style.display = "block";
-
-          } else {
-            // Si el documento no existe en Firestore pero está logueado localmente
-            console.log("No se encontraron detalles del perfil en la base de datos.");
-            document.getElementById("user-name").innerText = usuarioLogueadoId;
-            document.getElementById("info-id").innerText = "@" + usuarioLogueadoId;
-            document.getElementById("loading-state").style.display = "none";
-            document.getElementById("profile-content").style.display = "block";
+          if (datos.biografia) {
+            document.getElementById("user-bio").innerText = `"${datos.biografia}"`;
           }
-        })
-        .catch((error) => {
-          console.error("Error al jalar los datos de Firebase: ", error);
-          alert("Hubo un clavo al conectar con el servidor de Tobify.");
-        });
+          if (datos.fotoPerfilURL) {
+            document.getElementById("user-avatar").src = datos.fotoPerfilURL;
+          }
+        } else {
+          // Si el usuario es nuevo en Firebase y aún no tiene documento en la colección de Firestore
+          console.log("No hay documento todavía en Firestore, usando datos temporales.");
+          document.getElementById("user-name").innerText = nombreLocalBackup || "Usuario Nuevo";
+          document.getElementById("info-id").innerText = "@" + usuarioLogueadoId;
+        }
+
+      } catch (error) {
+        console.error("Clavo al conectar con Firestore: ", error);
+        // Respaldo de emergencia por si falla la red: muestra el nombre que guardó al loguearse
+        document.getElementById("user-name").innerText = nombreLocalBackup || "Usuario Local";
+        document.getElementById("info-id").innerText = "@" + usuarioLogueadoId;
+      } finally {
+        // En cualquier caso, quitar pantalla de carga y mostrar el perfil
+        document.getElementById("loading-state").style.display = "none";
+        document.getElementById("profile-content").style.display = "block";
+      }
     }
   </script>
 </body>
