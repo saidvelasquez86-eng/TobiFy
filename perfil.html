@@ -190,11 +190,11 @@
   </main>
 
   <script type="module">
-    // Importar librerías de la versión moderna compatibles con la web
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-lite.js";
+    // 1. IMPORTACIÓN MODULAR CORRECTA (v10)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Tus credenciales reales que me pasaste
+    // Credenciales reales de Tobify
     const firebaseConfig = {
       apiKey: "AIzaSyA5t3sMtfl1ngjG93Gjd7t-Bnncv1NDJ0g",
       authDomain: "tobify-26b47.firebaseapp.com",
@@ -205,15 +205,15 @@
       measurementId: "G-HGLLXFR9CF"
     };
 
-    // Inicializar Firebase moderno
-    const app = firebase.initializeApp(firebaseConfig);
+    // 2. INICIALIZACIÓN CONFIGURADA CORRECTAMENTE
+    const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Leer quién está logueado en la sesión local
+    // Leer los datos guardados localmente al iniciar sesión
     const usuarioLogueadoId = localStorage.getItem("usuarioLogueado");
     const nombreLocalBackup = localStorage.getItem("nombreUsuarioLogueado");
 
-    // Seguridad: Si intentan entrar a la fuerza sin loguearse
+    // Control de seguridad: Redirigir si no hay sesión iniciada
     if (!usuarioLogueadoId) {
       alert("Debés iniciar sesión primero, mi broder.");
       window.location.href = "login.html";
@@ -223,37 +223,45 @@
 
     async function obtenerDatosUsuario() {
       try {
-        // Apuntar al documento exacto en la colección "usuarios" en Firestore v9+
+        // 3. Buscar el documento en la colección "usuarios" usando el ID de la sesión
         const docRef = doc(db, "usuarios", usuarioLogueadoId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           const datos = docSnap.data();
           
-          // 1. Mostrar nombre de la base de datos, si no existe usa el del registro local, si no el ID
-          document.getElementById("user-name").innerText = datos.nombre || nombreLocalBackup || "Usuario de Tobify";
-          document.getElementById("info-id").innerText = "@" + (datos.nombre || usuarioLogueadoId).toLowerCase().replace(/\s+/g, '');
+          // Asignar el nombre desde Firestore
+          const nombreFinal = datos.nombre || nombreLocalBackup || "Usuario de Tobify";
+          document.getElementById("user-name").innerText = nombreFinal;
+          
+          // Generar el identificador estético @usuario
+          document.getElementById("info-id").innerText = "@" + nombreFinal.toLowerCase().replace(/\s+/g, '');
 
+          // Cargar biografía si existe en Firestore
           if (datos.biografia) {
             document.getElementById("user-bio").innerText = `"${datos.biografia}"`;
           }
+          
+          // Cargar URL de la foto de perfil si existe
           if (datos.fotoPerfilURL) {
             document.getElementById("user-avatar").src = datos.fotoPerfilURL;
           }
         } else {
-          // Si el usuario es nuevo en Firebase y aún no tiene documento en la colección de Firestore
-          console.log("No hay documento todavía en Firestore, usando datos temporales.");
-          document.getElementById("user-name").innerText = nombreLocalBackup || "Usuario Nuevo";
-          document.getElementById("info-id").innerText = "@" + usuarioLogueadoId;
+          // Si el usuario existe en Auth pero no se le ha creado el documento en Firestore
+          console.warn("El documento no existe en Firestore. Usando datos locales temporales.");
+          const nombreTemp = nombreLocalBackup || "Usuario Nuevo";
+          document.getElementById("user-name").innerText = nombreTemp;
+          document.getElementById("info-id").innerText = "@" + nombreTemp.toLowerCase().replace(/\s+/g, '');
         }
 
       } catch (error) {
         console.error("Clavo al conectar con Firestore: ", error);
-        // Respaldo de emergencia por si falla la red: muestra el nombre que guardó al loguearse
-        document.getElementById("user-name").innerText = nombreLocalBackup || "Usuario Local";
-        document.getElementById("info-id").innerText = "@" + usuarioLogueadoId;
+        // Respaldo de emergencia en caso de error de red
+        const nombreError = nombreLocalBackup || "Usuario Local";
+        document.getElementById("user-name").innerText = nombreError;
+        document.getElementById("info-id").innerText = "@" + nombreError.toLowerCase().replace(/\s+/g, '');
       } finally {
-        // En cualquier caso, quitar pantalla de carga y mostrar el perfil
+        // Apagar la pantalla de carga y mostrar la tarjeta de perfil
         document.getElementById("loading-state").style.display = "none";
         document.getElementById("profile-content").style.display = "block";
       }
